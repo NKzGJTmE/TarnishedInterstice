@@ -382,42 +382,43 @@ export const useAppStore = defineStore('app', () => {
       return { ok: false, silent: true }
     }
 
-    const { appName, exactHash, cleanTitle } = parseSceneRequest(contextSnapshot || lastValidWindow.value)
-    
-    const doc = {
-      content: text,
-      app_name: appName || 'Unknown',
-      exact_hash: exactHash || '', 
-      pos_x: Number((rawClickPos.x / windowWidth).toFixed(4)), 
-      pos_y: Number((rawClickPos.y / windowHeight).toFixed(4)), 
-      user_id: myUuid
-    }
-
-    // Clear cache for this context to force refresh on next fetch
-    const cacheKey = `${appName}|${exactHash || ''}`
-    messageCache.delete(cacheKey)
-
-    await refreshPostLimit()
-    if (postCount.value >= effectiveLimit.value) {
-      const target = findEvictionTarget()
-      if (!target) return { ok: false, error: '建言数量已达上限' }
-      await deleteMessage(target.id, null) // Silent delete
-    }
-
-    // Optimistic UI
-    const tempId = 'temp_' + Date.now()
-    const uiDoc = { ...doc, id: tempId, x: doc.pos_x, y: doc.pos_y, upvotes: 0, downvotes: 0 }
-    runesList.value.push(uiDoc)
-    
-    myHistoryList.value.push({ ...doc, id: tempId, created_at: new Date(), title_hint: cleanTitle, protected: false })
-    persistHistory()
-    
-    if (closeMenuCallback) closeMenuCallback()
-
     isSubmitInFlight.value = true
     lastSubmitAt.value = now
+    let tempId = null
 
     try {
+      const { appName, exactHash, cleanTitle } = parseSceneRequest(contextSnapshot || lastValidWindow.value)
+
+      const doc = {
+        content: text,
+        app_name: appName || 'Unknown',
+        exact_hash: exactHash || '',
+        pos_x: Number((rawClickPos.x / windowWidth).toFixed(4)),
+        pos_y: Number((rawClickPos.y / windowHeight).toFixed(4)),
+        user_id: myUuid
+      }
+
+      // Clear cache for this context to force refresh on next fetch
+      const cacheKey = `${appName}|${exactHash || ''}`
+      messageCache.delete(cacheKey)
+
+      await refreshPostLimit()
+      if (postCount.value >= effectiveLimit.value) {
+        const target = findEvictionTarget()
+        if (!target) return { ok: false, error: '建言数量已达上限' }
+        await deleteMessage(target.id, null) // Silent delete
+      }
+
+      // Optimistic UI
+      tempId = 'temp_' + Date.now()
+      const uiDoc = { ...doc, id: tempId, x: doc.pos_x, y: doc.pos_y, upvotes: 0, downvotes: 0 }
+      runesList.value.push(uiDoc)
+
+      myHistoryList.value.push({ ...doc, id: tempId, created_at: new Date(), title_hint: cleanTitle, protected: false })
+      persistHistory()
+
+      if (closeMenuCallback) closeMenuCallback()
+
       const { data: canPost } = await supabase.rpc('check_post_limit', { p_user_id: myUuid })
       if (canPost === false) throw new Error("Message limit reached!")
 
@@ -430,9 +431,11 @@ export const useAppStore = defineStore('app', () => {
         persistHistory()
       }
     } catch {
-      runesList.value = runesList.value.filter(r => r.id !== tempId)
-      myHistoryList.value = myHistoryList.value.filter(r => r.id !== tempId)
-      persistHistory()
+      if (tempId) {
+        runesList.value = runesList.value.filter(r => r.id !== tempId)
+        myHistoryList.value = myHistoryList.value.filter(r => r.id !== tempId)
+        persistHistory()
+      }
       return { ok: false, error: '提交失败' }
     } finally {
       isSubmitInFlight.value = false
