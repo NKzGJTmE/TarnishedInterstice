@@ -1,0 +1,78 @@
+{
+  "name": "tarnished-interstice",
+  "productName": "Tarnished Interstice",
+  "version": "1.0.0",
+  "description": "A cross-application desktop messaging system inspired by Elden Ring, featuring transparent overlays, active window polling, and secure Supabase integration.",
+  "main": "electron/main.js",
+  "type": "module",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "pack:win": "npm run build && electron-builder --config electron-builder.yml --win",
+    "pack:win:portable": "npm run build && electron-builder --config electron-builder.yml --win portable",
+    "preview": "electron-vite preview",
+    "lint": "eslint . --fix",
+    "typecheck": "vue-tsc --noEmit",
+    "format": "prettier --write src/"
+  },
+  "keywords": [
+    "electron",
+    "vue",
+    "supabase",
+    "overlay",
+    "elden-ring",
+    "elden-ring-messages",
+    "desktop-widget",
+    "active-win",
+    "messaging",
+    "social",
+    "game-overlay"
+  ],
+  "author": "NKzGJTmE",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NKzGJTmE/TarnishedInterstice.git"
+  },
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@vitejs/plugin-vue": "^5.0.0",
+    "@vue/test-utils": "^2.4.6",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1",
+    "electron-vite": "^5.0.0",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "eslint-plugin-vue": "^10.7.0",
+    "jsdom": "^27.4.0",
+    "prettier": "^3.8.0",
+    "rollup-plugin-visualizer": "^6.0.5",
+    "vite": "^5.0.0",
+    "vitest": "^4.0.17",
+    "vue-tsc": "^3.2.2"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.90.1",
+    "active-win": "^8.2.1",
+    "dotenv": "^17.2.3",
+    "electron-updater": "^6.7.3",
+    "iconv-lite": "^0.7.2",
+    "koffi": "^2.15.1",
+    "pinia": "^3.0.4",
+    "vue": "^3.4.0"
+  },
+  "build": {
+    "icon": "resources/icon.ico",
+    "win": {
+      "icon": "resources/icon.ico"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "NKzGJTmE",
+        "repo": "TarnishedInterstice"
+      }
+    ]
+  }
+}

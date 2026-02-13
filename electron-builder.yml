@@ -1,0 +1,27 @@
+appId: com.tarnished.interstice
+productName: Tarnished Interstice
+directories:
+  output: dist_electron
+  buildResources: resources
+files:
+  - out/**/*
+  - electron/**/*
+  - package.json
+extraResources:
+  - from: resources/icon.ico
+    to: icon.ico
+publish:
+  provider: github
+  owner: NKzGJTmE
+  repo: TarnishedInterstice
+win:
+  target: 
+    - nsis
+    - portable
+  icon: resources/icon.ico
+  requestedExecutionLevel: asInvoker
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  runAfterFinish: false
+  deleteAppDataOnUninstall: true

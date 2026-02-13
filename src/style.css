@@ -1,0 +1,20 @@
+html, body, #app {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0) !important;
+  overflow: hidden;
+  pointer-events: none !important;
+}
+
+.interactive, .info-panel {
+  pointer-events: auto !important;
+}
+
+img { -webkit-user-drag: none; }
+
+body.is-全局拖拽中 {
+  pointer-events: auto !important;
+  cursor: grabbing !important;
+}
