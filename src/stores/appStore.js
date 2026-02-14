@@ -180,7 +180,8 @@ export const useAppStore = defineStore('app', () => {
   }
   
   const updateGlobalCount = () => {
-    supabase.from('messages').select('*', { count: 'exact', head: true }).then(res => globalCount.value = res.count || 0)
+    // Disabled for now: global "建言总数" counting request.
+    // supabase.from('messages').select('*', { count: 'exact', head: true }).then(res => globalCount.value = res.count || 0)
   }
 
   // === Actions: Messages (Runes) ===
@@ -345,7 +346,9 @@ export const useAppStore = defineStore('app', () => {
     if (!id) return
     try {
       localStorage.setItem(DELETED_MESSAGE_EVENT_KEY, JSON.stringify({ id, ts: Date.now() }))
-    } catch {}
+    } catch {
+      // Ignore storage write failures in restricted environments.
+    }
   }
 
   const handleExternalDeleteEvent = (id) => {
@@ -366,7 +369,9 @@ export const useAppStore = defineStore('app', () => {
         verify_user_id: myUuid 
       })
     } catch(e) { console.error('Delete failed:', e) }
-    finally { updateGlobalCount() }
+    finally {
+      // updateGlobalCount()
+    }
   }
 
   const submitMessage = async (text, rawClickPos, windowWidth, windowHeight, contextSnapshot, closeMenuCallback) => {
@@ -439,7 +444,7 @@ export const useAppStore = defineStore('app', () => {
       return { ok: false, error: '提交失败' }
     } finally {
       isSubmitInFlight.value = false
-      updateGlobalCount()
+      // updateGlobalCount()
     }
     return { ok: true }
   }

@@ -2,7 +2,7 @@
   <div class="native-page">
     <div class="settings-header">
         <h2>系统设置</h2>
-        <div class="server-stat">建言总数: {{ store.globalCount }}</div>
+        <!-- <div class="server-stat">建言总数: {{ store.globalCount }}</div> -->
     </div>
     <div class="native-group">
       <div class="native-row">

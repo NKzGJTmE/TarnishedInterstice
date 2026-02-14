@@ -37,7 +37,7 @@ const BROWSER_LIST = [
   'min', 'qutebrowser', 'epiphany', 'konqueror'
 ];
 
-// Remove invisible Unicode chars that often appear in window titles (e.g. Microsoft​ Edge).
+// Remove invisible Unicode chars that often appear in window titles.
 const stripInvisibleChars = (s) =>
   (s || '').replace(/[\u200B-\u200D\uFEFF\u2060]/g, '');
 

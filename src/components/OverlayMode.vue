@@ -181,7 +181,9 @@ const storageHandler = (e) => {
     try {
       const payload = JSON.parse(e.newValue)
       if (payload?.id) store.handleExternalDeleteEvent(payload.id)
-    } catch {}
+    } catch {
+      // Ignore malformed cross-window payloads.
+    }
   }
 }
 
@@ -450,7 +452,7 @@ onMounted(() => {
   store.loadHistoryFromLocal()
   store.refreshPostLimit()
   store.initAutoLaunch()
-  store.updateGlobalCount()
+  // store.updateGlobalCount()
 
   if (window.electron) {
     windowUpdateDisposer = window.electron.onWindowUpdate((data) => {
@@ -487,11 +489,13 @@ onUnmounted(() => {
 
 <style scoped>
 .interactive { pointer-events: auto !important; user-select: none; }
-.floating-ball { position: fixed; width: 60px; height: 60px; background: transparent; z-index: 2000; will-change: transform; transition: transform 0.1s; display: flex; align-items: center; justify-content: center; cursor: grab; opacity: 1; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5)); }
+.floating-ball { position: fixed; width: 60px; height: 60px; background: transparent; z-index: 2000; will-change: transform; transition: filter 0.2s ease, opacity 0.2s ease; display: flex; align-items: center; justify-content: center; cursor: grab; opacity: 1; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5)); }
 .floating-ball.has-messages { animation: golden-breath 2s infinite ease-in-out; }
-.floating-ball.is-active { transform: scale(1.1); filter: drop-shadow(0 0 5px #f0efe3) drop-shadow(0 0 15px rgba(247, 240, 203, 0.6)); animation: none; }
-.floating-ball:active { cursor: grabbing; transform: scale(0.95); }
-.ball-icon { width: 100%; height: 100%; object-fit: contain; -webkit-user-drag: none; }
+.floating-ball.is-active { filter: drop-shadow(0 0 5px #f0efe3) drop-shadow(0 0 15px rgba(247, 240, 203, 0.6)); animation: none; }
+.floating-ball:active { cursor: grabbing; }
+.ball-icon { width: 100%; height: 100%; object-fit: contain; -webkit-user-drag: none; transition: transform 0.12s ease; transform-origin: center; }
+.floating-ball.is-active .ball-icon { transform: scale(1.1); }
+.floating-ball:active .ball-icon { transform: scale(0.95); }
 @keyframes golden-breath { 0%, 100% { filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5)); } 50% { filter: drop-shadow(0 0 15px rgba(249, 244, 215, 0.95)); } }
 .rune-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000; }
 .rune-item {

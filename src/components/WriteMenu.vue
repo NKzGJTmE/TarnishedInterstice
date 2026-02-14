@@ -102,6 +102,10 @@ class="list-scroll-area"
             
             <span class="row-text">{{ item.text }}</span>
           </div>
+          <div class="souls-scrollbar simple-scrollbar">
+            <div class="souls-scrollbar-track"></div>
+            <div class="souls-scrollbar-thumb" :style="simpleScrollbarStyle"></div>
+          </div>
         </template>
 
         <!-- B. 双栏列表  -->
@@ -135,6 +139,10 @@ v-show="hoveredCategory === key"
                  />
                  <span class="row-text">{{ categoryNames[key] }}</span>
               </div>
+              <div class="souls-scrollbar inner-scrollbar">
+                <div class="souls-scrollbar-track"></div>
+                <div class="souls-scrollbar-thumb" :style="catScrollbarStyle"></div>
+              </div>
            </div>
            <!-- 右栏 - 词语列表 -->
            <div
@@ -150,6 +158,10 @@ v-for="w in visibleWords" :key="w"
                  <!-- 右栏悬停临时亮 -->
                  <img class="row-hover-bg hover-bar" :src="ui.barHighlight" />
                  <span class="row-text">{{ w }}</span>
+              </div>
+              <div class="souls-scrollbar inner-scrollbar">
+                <div class="souls-scrollbar-track"></div>
+                <div class="souls-scrollbar-thumb" :style="wordScrollbarStyle"></div>
               </div>
            </div>
         </template>
@@ -302,6 +314,23 @@ const visibleCategories = computed(() => allCategories.value.slice(offsetCat.val
 
 const currentWordList = computed(() => words[hoveredCategory.value || currentCategory.value] || []);
 const visibleWords = computed(() => currentWordList.value.slice(offsetWord.value, offsetWord.value + VISIBLE_ROWS))
+
+const buildScrollbarStyle = (length, offset) => {
+  const total = Math.max(length, 1)
+  const viewport = Math.min(VISIBLE_ROWS, total)
+  const minThumb = 12
+  const thumbPercent = Math.max((viewport / total) * 100, minThumb)
+  const maxOffset = Math.max(total - viewport, 0)
+  const topPercent = maxOffset === 0 ? 0 : (offset / maxOffset) * (100 - thumbPercent)
+  return {
+    height: `${thumbPercent}%`,
+    top: `${topPercent}%`
+  }
+}
+
+const simpleScrollbarStyle = computed(() => buildScrollbarStyle(currentList.value.length, offsetSimple.value))
+const catScrollbarStyle = computed(() => buildScrollbarStyle(allCategories.value.length, offsetCat.value))
+const wordScrollbarStyle = computed(() => buildScrollbarStyle(currentWordList.value.length, offsetWord.value))
 
 const toggleMode = () => isComplexMode.value = !isComplexMode.value
 
@@ -514,6 +543,46 @@ onUnmounted(() => {
   width: 40%; 
   height: 100%; 
   pointer-events: auto; 
+}
+
+.souls-scrollbar {
+  position: absolute;
+  top: 1%;
+  right: 0.5%;
+  width: 11px;
+  height: 96%;
+  pointer-events: none;
+}
+
+.simple-scrollbar {
+  right: 0.1%;
+}
+
+.inner-scrollbar {
+  right: -2.5%;
+}
+
+.souls-scrollbar-track {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 3px;
+  height: 100%;
+  transform: translateX(-50%);
+  border-radius: 6px;
+  background: linear-gradient(to bottom, rgba(130, 124, 107, 0.1), rgba(170, 162, 138, 0.5), rgba(130, 124, 107, 0.15));
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.75);
+}
+
+.souls-scrollbar-thumb {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 5px;
+  transform: translateX(-50%);
+  border-radius: 8px;
+  background: linear-gradient(to bottom, rgba(210, 204, 182, 0.95), rgba(140, 133, 113, 0.95));
+  box-shadow: 0 0 4px rgba(233, 227, 199, 0.4), inset 0 0 1px rgba(255, 255, 255, 0.6);
 }
 
 .list-row.small { font-size: 14px; }

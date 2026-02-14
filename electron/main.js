@@ -39,6 +39,10 @@ const gotSingleInstanceLock = app.requestSingleInstanceLock()
 if (!gotSingleInstanceLock) {
   app.quit()
 }
+if (process.platform === 'win32') {
+  // Keep app fade logic, but disable native OS spawn animation.
+  app.commandLine.appendSwitch('wm-window-animations-disabled')
+}
 
 function getTargetDisplayBounds() {
   if (!mainWindow || mainWindow.isDestroyed()) {
